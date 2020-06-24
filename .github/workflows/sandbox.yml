@@ -20,8 +20,8 @@ jobs:
               token: GITHUB_TOKEN
     steps:
       - uses: actions/checkout@v2
-      - name: ${{ toJSON(matrix.registry) }}
-        run: ":"
+      - name: echo matrix
+        run: "echo ${{ toJSON(matrix.registry) }}"
 #       - run: |
 #           echo 1
 #           test 1 = 2
