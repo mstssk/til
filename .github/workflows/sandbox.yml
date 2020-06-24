@@ -24,3 +24,7 @@ jobs:
 #           echo 1
 #           test 1 = 2
 #           echo 2
+      - name: Verify Authentication
+        run: npm ping --registry ${{ matrix.registry.url }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets[matrix.registry.token] }}
