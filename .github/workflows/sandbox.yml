@@ -10,14 +10,12 @@ jobs:
     strategy:
       matrix:
         registry:
-          - npmjs:
-              name: npmjs
-              url: null # npmjs is default.
-              token: NPM_TOKEN
-          - github:
-              name: github
-              url: "https://npm.pkg.github.com"
-              token: GITHUB_TOKEN
+          - name: npmjs
+            url: null # npmjs is default.
+            token: NPM_TOKEN
+          - name: github
+            url: "https://npm.pkg.github.com"
+            token: GITHUB_TOKEN
     steps:
       - uses: actions/checkout@v2
       - name: echo matrix
