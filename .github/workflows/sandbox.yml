@@ -7,9 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        registry:
+          - npmjs:
+              name: npmjs
+              url: null # npmjs is default.
+              token: NPM_TOKEN
+          - github:
+              name: github
+              url: "https://npm.pkg.github.com"
+              token: GITHUB_TOKEN
     steps:
-    - uses: actions/checkout@v2
-    - run: |
-        echo 1
-        test 1 = 2
-        echo 2
+      - uses: actions/checkout@v2
+      - name: ${{ toJSON(matrix.registry) }}
+        run: ":"
+#       - run: |
+#           echo 1
+#           test 1 = 2
+#           echo 2
