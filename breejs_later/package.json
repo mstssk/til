@@ -1,0 +1,14 @@
+{
+  "name": "breejs_later",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@breejs/later": "^4.0.2"
+  }
+}
