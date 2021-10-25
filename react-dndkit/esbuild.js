@@ -5,6 +5,7 @@ esbuild
     bundle: true,
     outdir: "dist/",
     inject: ["./react-shim.js"],
+    watch: true,
   })
   .catch((reason) => {
     console.error(reason);
