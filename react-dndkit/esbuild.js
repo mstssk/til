@@ -4,6 +4,7 @@ esbuild
     entryPoints: ["src/index.tsx"],
     bundle: true,
     outdir: "dist/",
+    inject: ["./react-shim.js"],
   })
   .catch((reason) => {
     console.error(reason);
