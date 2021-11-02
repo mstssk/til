@@ -33,11 +33,21 @@ export function App() {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((id) => (
-          <SortableItem key={id} id={id}>
-            {id}
-          </SortableItem>
-        ))}
+        <table style={{ borderCollapse: "collapse" }}>
+          <thead style={{ borderBottom: "1px solid black" }}>
+            <tr>
+              <th></th>
+              <th>No.</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((id) => (
+              <SortableItem key={id} id={id}>
+                {id}
+              </SortableItem>
+            ))}
+          </tbody>
+        </table>
       </SortableContext>
     </DndContext>
   );
@@ -46,6 +56,7 @@ export function App() {
     const { active, over } = event;
 
     if (active.id !== over.id) {
+      console.debug(active, over);
       setItems((items) => {
         const oldIndex = items.indexOf(active.id);
         const newIndex = items.indexOf(over.id);

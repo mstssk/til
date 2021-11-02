@@ -17,11 +17,15 @@ export const SortableItem: FC<{ id: string }> = (props) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <button {...attributes} {...listeners} style={handleStyle}>
-        ☰
-      </button>
-      <span>{props.children}</span>
-    </div>
+    <tr ref={setNodeRef} style={style}>
+      <td>
+        <button {...attributes} {...listeners} style={handleStyle}>
+          ☰
+        </button>
+      </td>
+      <td>
+        <span>{props.children}</span>
+      </td>
+    </tr>
   );
 };
