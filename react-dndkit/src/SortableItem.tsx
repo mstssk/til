@@ -20,7 +20,7 @@ export const SortableItem: FC<{ id: string }> = (props) => {
     <tr ref={setNodeRef} style={style}>
       <td>
         <button {...attributes} {...listeners} style={handleStyle}>
-          ☰
+          <span className="material-icons">drag_handle</span>
         </button>
       </td>
       <td>
