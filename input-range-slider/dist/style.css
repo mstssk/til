@@ -1,0 +1,39 @@
+* {
+  box-sizing: content-box;
+}
+.container {
+  position: relative;
+  border: 1px dashed gray;
+  height: 30px;
+  width: 1000px;
+}
+
+.indicator {
+  position: absolute;
+  /* width: 1; */
+  border-left: 1px solid tomato;
+  height: 100%;
+}
+
+.range1 {
+  position: absolute;
+  height: 100%;
+  appearance: none;
+  width: 1000px;
+  padding: 0;
+  margin: 0;
+}
+
+.range1::-webkit-slider-thumb {
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  width: 1px;
+  height: 20px;
+  /* background: tomato;
+  opacity: 0.1; */
+  cursor: pointer;
+  /* box-shadow: 0 0 3px rgb(0, 161, 255); */
+  /* margin-right: 5px; */
+  /* margin-left: -5px; */
+}
