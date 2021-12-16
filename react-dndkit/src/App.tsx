@@ -14,11 +14,15 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import {
+  restrictToVerticalAxis,
+  restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
 
 import { SortableItem } from "./SortableItem";
 
 export function App() {
-  const [items, setItems] = useState(["1", "2", "3"]);
+  const [items, setItems] = useState(["1", "2", "3", "4", "5"]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -31,6 +35,7 @@ export function App() {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
+      modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
         <table style={{ borderCollapse: "collapse" }}>

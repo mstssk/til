@@ -7,7 +7,11 @@ export const SortableItem: FC<{ id: string }> = (props) => {
     useSortable({ id: props.id });
 
   const style: CSSProperties = {
-    transform: CSS.Transform.toString(transform),
+    height: `${Number(props.id)}0px`,
+    border: "1px solid tomato",
+    transform: transform
+      ? CSS.Transform.toString({ ...transform, scaleX: 1, scaleY: 1 })
+      : null,
     transition,
   };
 
