@@ -1,9 +1,11 @@
+import { HorizontalDrag } from "./HorizontalDrag";
 import { SortableTable } from "./SortableTable";
 
 export function App() {
   return (
     <div>
-      <SortableTable />
+      <HorizontalDrag />
+      {/* <SortableTable /> */}
     </div>
   );
 }
