@@ -15,9 +15,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@dnd-kit/core": "^4.0.3",
-    "@dnd-kit/modifiers": "^4.0.0",
-    "@dnd-kit/sortable": "^5.1.0",
+    "@dnd-kit/core": "^5.0.1",
+    "@dnd-kit/modifiers": "^5.0.0",
+    "@dnd-kit/sortable": "^6.0.0",
     "@types/react": "^17.0.32",
     "@types/react-dom": "^17.0.10",
     "esbuild": "^0.13.9",
