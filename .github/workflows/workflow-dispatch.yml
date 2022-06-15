@@ -20,6 +20,9 @@ on:
         description: "Environment to run tests against"
         type: environment
         # required: true
+      text:
+        description: strings
+        type: string
 
 jobs:
   log-the-inputs:
@@ -29,6 +32,7 @@ jobs:
           echo "Log level: $LEVEL"
           echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
+          echo "Text: ${{ inputs.text }}"
         env:
           LEVEL: ${{ inputs.logLevel }}
           TAGS: ${{ inputs.tags }}
