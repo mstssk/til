@@ -35,6 +35,7 @@ jobs:
           echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
           echo "Text: ${{ inputs.text }}"
+          echo "Branch: ${{ github.ref }}"
         env:
           LEVEL: ${{ inputs.logLevel }}
           TAGS: ${{ inputs.tags }}
