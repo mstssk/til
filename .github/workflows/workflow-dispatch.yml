@@ -30,7 +30,8 @@ jobs:
   log-the-inputs:
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: "Run on ${{ github.ref }}"
+        run: |
           echo "Log level: $LEVEL"
           echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
