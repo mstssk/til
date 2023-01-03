@@ -1,19 +1,33 @@
 const path = require("node:path");
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, screen } = require("electron");
 
 const createWindow = () => {
+  const primaryDisplay = screen.getPrimaryDisplay();
+
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 120,
+    height: 120,
+    x: 30,
+    y: primaryDisplay.bounds.height - 150,
+    frame: false,
+    titleBarStyle: "customButtonsOnHover",
+    transparent: true,
+    resizable: false,
+    alwaysOnTop: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
+  win.setWindowButtonVisibility(true);
+  win.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: true,
+    skipTransformProcessType: true,
+  });
   win.loadFile("index.html");
 
   // デベロッパー ツールを開きます。
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 };
 
 // このメソッドは、Electron の初期化が完了し、
@@ -25,7 +39,9 @@ app.whenReady().then(() => {
   app.on("activate", () => {
     // macOS では、Dock アイコンのクリック時に他に開いているウインドウがない
     // 場合、アプリのウインドウを再作成するのが一般的です。
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
   });
 });
 
@@ -33,5 +49,7 @@ app.whenReady().then(() => {
 // Cmd + Q で明示的に終了するまで、アプリケーションとそのメニューバーを
 // アクティブにするのが一般的です。
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
 });
