@@ -38,6 +38,8 @@ jobs:
           echo "Environment: $ENVIRONMENT"
           echo "Text: ${{ inputs.text }}"
           echo "Branch: ${{ github.ref }}"
+          sleep 60
+          echo "Sleeped"
         env:
           LEVEL: ${{ inputs.logLevel }}
           TAGS: ${{ inputs.tags }}
