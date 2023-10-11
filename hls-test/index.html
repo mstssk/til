@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- <link href="https://amp.azure.net/libs/amp/latest/skins/amp-default/azuremediaplayer.min.css" rel="stylesheet">
+  <script src="https://amp.azure.net/libs/amp/latest/azuremediaplayer.min.js"></script> -->
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    window.addEventListener("load", () => {
+      const video = document.querySelector("video");
+      video.disablePictureInPicture = true;
+      console.log(video);
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        // hls.loadSource('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8');
+        const source = video.src || video.querySelector("source").src;
+        console.log({ source })
+        hls.loadSource(source);
+        hls.attachMedia(video);
+        // hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        //   video.play();
+        // });
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <video class="azuremediaplayer amp-default-skin" width="800" controls data-setup="">
+    <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL" />
+    <track default kind="subtitles" label="日本語" srclang="ja" src="./text.vtt" />
+  </video>
+</body>
+
+</html>
