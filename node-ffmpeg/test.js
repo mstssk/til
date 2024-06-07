@@ -1,9 +1,8 @@
 const os = require("node:os");
 const fs = require("node:fs").promises;
 const path = require("node:path");
-const util = require("node:util");
 const crypto = require("node:crypto");
-const childProcess = require("node:child_process");
+const exec = require("node:util").promisify(require("node:child_process").exec);
 
 (async () => {
   const tmpDir = await fs.mkdtemp(
@@ -23,7 +22,7 @@ const childProcess = require("node:child_process");
   const outPath = path.join(tmpDir, `output.mp4`);
   console.log("Start converting into:");
   console.log(outPath);
-  const ffmpegResult = await util.promisify(childProcess.exec)(
+  const ffmpegResult = await exec(
     `./bin/ffmpeg -i ${tmpPath} -r 30 ${outPath}`
   );
   if (ffmpegResult.stdout) {
@@ -36,11 +35,11 @@ const childProcess = require("node:child_process");
 
   // 出力ファイルをダウンロードフォルダに移動
   console.log("Move to Downloads dir:");
-  await util.promisify(childProcess.exec)(`mv -f ${outPath} ~/Downloads/`);
+  await exec(`mv -f ${outPath} ~/Downloads/`);
 
   // あとかたづけ
   await fs.rm(tmpDir, { recursive: true, force: true });
 
   // 出力ファイルを開く
-  await util.promisify(childProcess.exec)(`open ~/Downloads/`);
+  await exec(`open ~/Downloads/`);
 })();
