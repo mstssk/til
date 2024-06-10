@@ -62,41 +62,15 @@
       encoder.configure({
         codec: "vp09.00.10.08",
         hardwareAcceleration: "prefer-software",
-        width: 1280,
-        height: 720,
-        framerate: 30
+        // ストリームの実際の解像度とフレームレートを指定する場合、ストリームを一度Video要素に書き出す必要があり面倒。
+        width: 1920,
+        height: 1080,
+        framerate: 30,
+        bitrate: 6 * 1000 * 1000, // 6Mbps
       });
-
-      let reqId;
-      let frame_counter = 0;
-      const func = async () => {
-        const result = await reader.read();
-        if (result.done) {
-          cancelAnimationFrame(reqId);
-          console.log('done', result);
-          return;
-        };
-        console.log('requestAnimationFrame');
-
-        let frame = result.value;
-        if (encoder.encodeQueueSize > 2) {
-          // Too many frames in flight, encoder is overwhelmed
-          // let's drop this frame.
-          frame.close();
-          console.log('dropped frame');
-        } else {
-          frame_counter++;
-          const insert_keyframe = frame_counter % 150 === 0;
-          encoder.encode(frame, { keyFrame: insert_keyframe });
-          frame.close();
-        }
-        reqId = requestAnimationFrame(func);
-      };
-      reqId = requestAnimationFrame(func);
 
       stream.getVideoTracks().forEach(track => {
         track.onended = async () => {
-          cancelAnimationFrame(reqId);
 
           await encoder.flush();
           muxer.finalize();
@@ -111,6 +85,33 @@
 
         };
       });
+
+      // requestAnimationFrameだとタブが非アクティブの時に処理が止まるので、whileループで代用
+      let frame_counter = 0;
+      (async () => {
+        while (true) {
+          const result = await reader.read();
+          if (result.done) {
+            console.log('done', result);
+            break;
+          };
+          console.log('requestAnimationFrame');
+
+          let frame = result.value;
+          if (encoder.encodeQueueSize > 2) {
+            // Too many frames in flight, encoder is overwhelmed
+            // let's drop this frame.
+            frame.close();
+            console.log('dropped frame');
+          } else {
+            frame_counter++;
+            const insert_keyframe = frame_counter % 150 === 0;
+            console.log('encode', frame_counter, insert_keyframe);
+            encoder.encode(frame, { keyFrame: insert_keyframe });
+            frame.close();
+          }
+        }
+      })();
 
     });
 
