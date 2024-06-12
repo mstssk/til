@@ -21,29 +21,52 @@
     const start = document.getElementById('start');
 
     start.addEventListener('click', async () => {
-      const muxer = new Muxer({
-        target: new ArrayBufferTarget(),
+      const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          codec: 'V_VP9',
-          width: 1280,
-          height: 720
-        }
+          width: { max: 1920 },
+          height: { max: 1080 },
+        },
       });
 
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
+      const size = await new Promise((resolve) => {
+        const elem = document.createElement('video');
+        elem.onloadedmetadata = (e) => {
+          const width = e.target.videoWidth;
+          const height = e.target.videoHeight;
+          elem.remove();
+          resolve({ width, height });
+        };
+        elem.preload = 'auto';
+        elem.muted = true;
+        elem.srcObject = stream;
       });
+      console.log(size);
 
       const processor = new MediaStreamTrackProcessor({ track: stream.getVideoTracks()[0] });
       const reader = processor.readable.getReader();
 
+      const muxer = new Muxer({
+        target: new ArrayBufferTarget(),
+        video: {
+          codec: 'V_VP9',
+          width: size.width,
+          height: size.height,
+        },
+        firstTimestampBehavior: 'offset',
+      });
+
+      let start;
       const encoder = new VideoEncoder({
         output: (chunk, metadata) => {
-          muxer.addVideoChunk(chunk, metadata)
+          if (!start) {
+            start = new Date();
+          }
+          console.log(encoder.state);
           console.log(chunk);
           if (metadata.decoderconfig) {
-            console.log(metadata.decoderconfig);
+            console.log("decoderconfig", metadata.decoderconfig);
           }
+          muxer.addVideoChunk(chunk, metadata)
         },
         error: (e) => console.error(e.message)
       });
@@ -51,8 +74,8 @@
         codec: "vp09.00.10.08",
         hardwareAcceleration: "prefer-software",
         // ストリームの実際の解像度とフレームレートを指定する場合、ストリームを一度Video要素に書き出す必要があり面倒。
-        width: 1920,
-        height: 1080,
+        width: size.width,
+        height: size.height,
         framerate: 30,
         bitrate: 6 * 1000 * 1000, // 6Mbps
       });
@@ -62,6 +85,7 @@
 
           await encoder.flush();
           muxer.finalize();
+          console.log("Recorded duration", (new Date() - start) / 1000);
 
           const blob = new Blob([muxer.target.buffer], { type: 'video/webm' });
           const url = URL.createObjectURL(blob);
@@ -76,6 +100,7 @@
 
       // requestAnimationFrameだとタブが非アクティブの時に処理が止まるので、whileループで代用
       let frame_counter = 0;
+      let lastKeyDate = start;
       (async () => {
         while (true) {
           const result = await reader.read();
@@ -93,7 +118,12 @@
             console.log('dropped frame');
           } else {
             frame_counter++;
-            const insert_keyframe = frame_counter % 150 === 0;
+            // WebMの制限で32768ms以上のdurationを持つフレームは分割しないといけない。
+            const passed30secs = (new Date() - lastKeyDate) / 1000 > 30;
+            const insert_keyframe = frame_counter % 150 === 0 || passed30secs;
+            if (insert_keyframe) {
+              lastKeyDate = new Date();
+            }
             console.log('encode', frame_counter, insert_keyframe);
             encoder.encode(frame, { keyFrame: insert_keyframe });
             frame.close();
