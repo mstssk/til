@@ -11,20 +11,14 @@
 
   <h1>WebCodec VideoEncoder</h1>
 
-  <button id="start">Start</button>
-  <button id="stop">Stop</button>
-  <button id="download">Download</button>
-  <br>
-  <br>
+  <button id="start">Start Recoding</button>
+
   <!-- <video id="video" autoplay controls></video> -->
 
   <script type="module">
     import { Muxer, ArrayBufferTarget } from "https://www.unpkg.com/webm-muxer@4.0.1/build/webm-muxer.mjs";
 
-    // const video = document.getElementById('video');
     const start = document.getElementById('start');
-    const stop = document.getElementById('stop');
-    const download = document.getElementById('download');
 
     start.addEventListener('click', async () => {
       const muxer = new Muxer({
@@ -38,11 +32,7 @@
 
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
-        // audio: true
       });
-      // video.width = 1280;
-      // video.height = 720;
-      // video.srcObject = stream;
 
       const processor = new MediaStreamTrackProcessor({ track: stream.getVideoTracks()[0] });
       const reader = processor.readable.getReader();
@@ -110,12 +100,8 @@
           }
         }
       })();
-
     });
 
-    stop.addEventListener('click', () => {
-      alert("noop");
-    });
   </script>
 
 </body>
