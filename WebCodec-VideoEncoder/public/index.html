@@ -122,32 +122,32 @@
         };
       });
 
-      // requestAnimationFrameだとタブが非アクティブの時に処理が止まるので、whileループで代用
-      let frame_counter = 0;
-      let lastKeyDate = start;
       (async () => {
+        let lastKeyFrameTime = -Infinity;
+        function calcKeyFrame() {
+          const keyFrame = document.timeline.currentTime - lastKeyFrameTime > 5_000;
+          if (keyFrame) {
+            lastKeyFrameTime = document.timeline.currentTime;
+          }
+          return keyFrame;
+        }
+        // requestAnimationFrameだとタブが非アクティブの時に処理が止まるので、whileループで代用
         while (true) {
-          const result = await videoReader.read();
-          if (result.done) {
-            console.log('done', result);
+          const { done, value: frame } = await videoReader.read();
+          console.log('read', { done, frame });
+          if (done) {
+            console.log('done');
             break;
           };
-
-          let frame = result.value;
           if (videoEncoder.encodeQueueSize > 2) {
             // Too many frames in flight, encoder is overwhelmed
             // let's drop this frame.
             console.warn('dropped frame');
+          } else if (videoEncoder.state === 'closed') {
+            console.warn('encoder closed');
+            break;
           } else {
-            frame_counter++;
-            // WebMの制限で32768ms以上のdurationを持つフレームは分割しないといけない。
-            const passed30secs = (new Date() - lastKeyDate) / 1000 > 30;
-            const insert_keyframe = frame_counter % 150 === 0 || passed30secs;
-            if (insert_keyframe) {
-              lastKeyDate = new Date();
-            }
-            console.log('encode', frame_counter, insert_keyframe);
-            videoEncoder.encode(frame, { keyFrame: insert_keyframe });
+            videoEncoder.encode(frame, { keyFrame: calcKeyFrame() });
           }
           frame.close();
         }
