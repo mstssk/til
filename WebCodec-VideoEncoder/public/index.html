@@ -18,7 +18,7 @@
   <!-- <video id="video" autoplay controls></video> -->
 
   <script type="module">
-    import { Muxer, ArrayBufferTarget } from "https://www.unpkg.com/webm-muxer@4.0.1/build/webm-muxer.mjs";
+    import { Muxer, StreamTarget } from "https://www.unpkg.com/webm-muxer@4.0.1/build/webm-muxer.mjs";
 
     const start = document.getElementById('start');
 
@@ -66,8 +66,31 @@
 
       const videoReader = new MediaStreamTrackProcessor({ track: captureStream.getVideoTracks()[0] }).readable.getReader();
 
+      const array = []
+      const streamTarget = new StreamTarget({
+        onData(data, position) {
+          const endPosition = position + data.byteLength - 1;
+          if (array.some(({ position: p, data: d, }) =>
+            (p <= position && position < p + d.byteLength)
+            || (p <= endPosition && endPosition < p + d.byteLength))) {
+            console.warn('onData(duplicated position)', { position, byteLength: data.byteLength, endPosition });
+          } else {
+            console.debug('onData', { position, byteLength: data.byteLength, endPosition });
+          }
+          array.push({ position, data });
+        },
+        // onHeader(data, position) {
+        //   console.info('onHeader');
+        // },
+        // onCluster(data, position, timestamp) {
+        //   console.info('onCluster');
+        // },
+        chunked: true,
+        chunkSize: 3 * 1024 * 1024,
+      });
+
       const muxer = new Muxer({
-        target: new ArrayBufferTarget(),
+        target: streamTarget,
         video: {
           codec: 'V_VP9',
           width: width,
@@ -75,7 +98,7 @@
           frameRate: 30,
         },
         firstTimestampBehavior: 'offset',
-        streaming: true,
+        // streaming: true,
       });
 
       let start;
@@ -85,7 +108,7 @@
             start = new Date();
           }
           // console.log(videoEncoder.state);
-          console.log(chunk);
+          // console.log(chunk);
           if (metadata.decoderconfig) {
             console.log("decoderconfig", metadata.decoderconfig);
           }
@@ -95,7 +118,7 @@
       });
       videoEncoder.configure({
         codec: "vp09.00.10.08",
-        hardwareAcceleration: "prefer-software",
+        // hardwareAcceleration: "prefer-software",
         // ストリームの実際の解像度とフレームレートを指定する場合、ストリームを一度Video要素に書き出す必要があり面倒。
         width: width,
         height: height,
@@ -111,13 +134,13 @@
           muxer.finalize();
           console.log("Recorded duration", (new Date() - start) / 1000);
 
-          const blob = new Blob([muxer.target.buffer], { type: 'video/webm' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.setAttribute('href', url);
-          a.setAttribute('download', 'video.webm');
-          a.click();
-          URL.revokeObjectURL(url);
+          // const blob = new Blob([muxer.target.buffer], { type: 'video/webm' });
+          // const url = URL.createObjectURL(blob);
+          // const a = document.createElement('a');
+          // a.setAttribute('href', url);
+          // a.setAttribute('download', 'video.webm');
+          // a.click();
+          // URL.revokeObjectURL(url);
 
         };
       });
@@ -134,7 +157,7 @@
         // requestAnimationFrameだとタブが非アクティブの時に処理が止まるので、whileループで代用
         while (true) {
           const { done, value: frame } = await videoReader.read();
-          console.log('read', { done, frame });
+          // console.log('read', { done, frame });
           if (done) {
             console.log('done');
             break;
