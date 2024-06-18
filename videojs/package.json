@@ -1,0 +1,14 @@
+{
+  "name": "videojs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve ./public"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^14.2.3"
+  }
+}
