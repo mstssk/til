@@ -64,8 +64,6 @@
         captureStream = displayStream;
       }
 
-      const videoReader = new MediaStreamTrackProcessor({ track: captureStream.getVideoTracks()[0] }).readable.getReader();
-
       const array = []
       const streamTarget = new StreamTarget({
         onData(data, position) {
@@ -145,36 +143,18 @@
         };
       });
 
-      (async () => {
-        let lastKeyFrameTime = -Infinity;
-        function calcKeyFrame() {
-          const keyFrame = document.timeline.currentTime - lastKeyFrameTime > 5_000;
-          if (keyFrame) {
-            lastKeyFrameTime = document.timeline.currentTime;
-          }
-          return keyFrame;
-        }
-        // requestAnimationFrameだとタブが非アクティブの時に処理が止まるので、whileループで代用
-        while (true) {
-          const { done, value: frame } = await videoReader.read();
-          // console.log('read', { done, frame });
-          if (done) {
-            console.log('done');
-            break;
-          };
-          if (videoEncoder.encodeQueueSize > 2) {
-            // Too many frames in flight, encoder is overwhelmed
-            // let's drop this frame.
-            console.warn('dropped frame');
-          } else if (videoEncoder.state === 'closed') {
-            console.warn('encoder closed');
-            break;
-          } else {
-            videoEncoder.encode(frame, { keyFrame: calcKeyFrame() });
-          }
-          frame.close();
-        }
-      })();
+      let lastKeyFrameTime = -Infinity;
+      new MediaStreamTrackProcessor({ track: captureStream.getVideoTracks()[0] })
+        .readable.pipeTo(new WritableStream({
+          write: (frame) => {
+            const keyFrame = document.timeline.currentTime - lastKeyFrameTime > 5_000;
+            if (keyFrame) {
+              lastKeyFrameTime = document.timeline.currentTime;
+            }
+            videoEncoder.encode(frame, { keyFrame });
+            frame.close();
+          },
+        }));
     });
 
   </script>
