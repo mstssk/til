@@ -12,13 +12,11 @@
   <h1>WebCodec VideoEncoder</h1>
 
   <button id="start">Start Recoding</button><br>
-  <br>
-  <label><input type="checkbox" id="use_canvas">Use Canvas</label>
 
   <!-- <video id="video" autoplay controls></video> -->
 
   <script type="module">
-    import { Muxer, StreamTarget } from "https://www.unpkg.com/webm-muxer@4.0.1/build/webm-muxer.mjs";
+    import { Muxer, ArrayBufferTarget } from "https://www.unpkg.com/webm-muxer@4.0.1/build/webm-muxer.mjs";
 
     const start = document.getElementById('start');
 
@@ -31,64 +29,48 @@
         },
       });
 
-      const videoElem = await new Promise((resolve) => {
-        const videoElem = document.createElement('video');
-        videoElem.preload = 'auto';
-        videoElem.muted = true;
-        videoElem.onloadedmetadata = (e) => {
-          videoElem.onloadedmetadata = null;
-          resolve(videoElem);
-        };
-        videoElem.srcObject = displayStream;
-        videoElem.play();
-      });
-      const width = videoElem.videoWidth;
-      const height = videoElem.videoHeight;
-      console.log({ width, height });
 
-      let captureStream;
-      if (use_canvas.checked) {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const intervalId = setInterval(() => {
-          canvas.getContext('2d').drawImage(videoElem, 0, 0, width, height);
-        }, Math.floor(1000 / 30));
-        captureStream = canvas.captureStream(30);
-        displayStream.getVideoTracks().forEach(track => {
-          track.addEventListener("ended", () => {
-            clearInterval(intervalId);
-          });
-        });
-      } else {
-        captureStream = displayStream;
-      }
+      /** @type {number} */
+      let lastTimestamp = 0;
+      const timestamps = [];
 
-      const array = []
-      const streamTarget = new StreamTarget({
-        onData(data, position) {
-          const endPosition = position + data.byteLength - 1;
-          if (array.some(({ position: p, data: d, }) =>
-            (p <= position && position < p + d.byteLength)
-            || (p <= endPosition && endPosition < p + d.byteLength))) {
-            console.warn('onData(duplicated position)', { position, byteLength: data.byteLength, endPosition });
-          } else {
-            console.debug('onData', { position, byteLength: data.byteLength, endPosition });
-          }
-          array.push({ position, data });
-        },
-        // onHeader(data, position) {
-        //   console.info('onHeader');
-        // },
-        // onCluster(data, position, timestamp) {
-        //   console.info('onCluster');
-        // },
-        chunked: true,
-        chunkSize: 3 * 1024 * 1024,
+      /** @type {HTMLCanvasElement} */
+      const canvas = await new Promise((resolve) => {
+        /** @type {HTMLCanvasElement} */
+        let canvas;
+        new MediaStreamTrackProcessor({ track: displayStream.getVideoTracks()[0] })
+          .readable.pipeTo(new WritableStream({
+            /** @param {VideoFrame} frame */
+            write: (frame) => {
+
+              // fpsの計算
+              timestamps.push(document.timeline.currentTime);
+              // console.log(document.timeline.currentTime, lastTimestamp, document.timeline.currentTime - lastTimestamp);
+              if (document.timeline.currentTime - lastTimestamp > 1000) {
+                console.log(timestamps.length, "fps");
+                timestamps.splice(0); // clear
+                lastTimestamp = document.timeline.currentTime;
+              }
+
+              if (!canvas) {
+                canvas = document.createElement('canvas');
+                resolve(canvas);
+                // document.body.appendChild(canvas);
+              }
+              canvas.width = frame.displayWidth;
+              canvas.height = frame.displayHeight;
+              canvas.getContext('2d').drawImage(frame, 0, 0, frame.displayWidth, frame.displayHeight);
+              frame.close();
+            },
+          }));
       });
+      const width = canvas.width;
+      const height = canvas.height;
+      console.log(width, height, canvas);
+      const captureStream = canvas.captureStream(30);
 
       const muxer = new Muxer({
-        target: streamTarget,
+        target: new ArrayBufferTarget(),
         video: {
           codec: 'V_VP9',
           width: width,
@@ -126,19 +108,19 @@
 
       displayStream.getVideoTracks().forEach(track => {
         track.onended = async () => {
-
+          captureStream.getTracks().forEach(track => track.stop());
           await videoEncoder.flush();
           videoEncoder.close();
           muxer.finalize();
           console.log("Recorded duration", (new Date() - start) / 1000);
 
-          // const blob = new Blob([muxer.target.buffer], { type: 'video/webm' });
-          // const url = URL.createObjectURL(blob);
-          // const a = document.createElement('a');
-          // a.setAttribute('href', url);
-          // a.setAttribute('download', 'video.webm');
-          // a.click();
-          // URL.revokeObjectURL(url);
+          const blob = new Blob([muxer.target.buffer], { type: 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.setAttribute('href', url);
+          a.setAttribute('download', 'video.webm');
+          a.click();
+          URL.revokeObjectURL(url);
 
         };
       });
@@ -150,6 +132,7 @@
             const keyFrame = document.timeline.currentTime - lastKeyFrameTime > 5_000;
             if (keyFrame) {
               lastKeyFrameTime = document.timeline.currentTime;
+              console.log("keyFrame");
             }
             videoEncoder.encode(frame, { keyFrame });
             frame.close();
