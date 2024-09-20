@@ -15,7 +15,10 @@ export async function mp4Duration(url) {
     throw new Error(`Failed to fetch ${url}`);
   }
   const contentType = res.headers.get("content-type");
-  if (!contentType.startsWith("video/mp4")) {
+  if (
+    !contentType.startsWith("video/mp4") &&
+    !contentType.startsWith("application/octet-stream")
+  ) {
     throw new Error(`Invalid content type: ${contentType} for ${url}`);
   }
 
@@ -28,7 +31,7 @@ export async function mp4Duration(url) {
       const start = index + 17;
       const timescale = buf.readUInt32BE(start, 4);
       const duration = buf.readUInt32BE(start + 4, 4);
-      return { duration, timescale };
+      return { duration, timescale, durationInSeconds: duration / timescale };
     }
   }
   throw new Error(`mvhd block not found for ${url}`);
