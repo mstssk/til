@@ -14,18 +14,21 @@ export async function mp4Duration(url) {
   if (!res.ok) {
     throw new Error(`Failed to fetch ${url}`);
   }
-  const contentType = res.headers.get("content-type");
-  if (
-    !contentType.startsWith("video/mp4") &&
-    !contentType.startsWith("application/octet-stream")
-  ) {
-    throw new Error(`Invalid content type: ${contentType} for ${url}`);
-  }
 
+  let ftypChecked = false;
   const mvhdBuf = Buffer.from("mvhd");
   for await (const chunk of res.body) {
     // Note: https://gist.github.com/Elements-/cf063254730cd754599e
     const buf = Buffer.from(chunk.buffer);
+
+    if (!ftypChecked) {
+      // First chunk should be 'ftyp' box.
+      if (buf.indexOf(Buffer.from("ftyp")) !== 4) {
+        throw new Error(`File is not mp4 or mov. 'ftyp' is missing for ${url}`);
+      }
+      ftypChecked = true;
+    }
+
     const index = buf.indexOf(mvhdBuf);
     if (index >= 0) {
       const start = index + 17;
