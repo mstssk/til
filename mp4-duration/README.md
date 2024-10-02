@@ -15,3 +15,20 @@ $ time node usage.js https://raw.githubusercontent.com/mstssk/til/refs/heads/mas
 { duration: 7680000, timescale: 256000, durationInSeconds: 30 }
 node usage.js   0.51s user 0.21s system 11% cpu 6.265 total
 ```
+
+MOVファイルもほぼ同じ形式なのでイケる。
+
+```
+$ time node usage.js https://raw.githubusercontent.com/mstssk/til/refs/heads/master/mp4-duration/sample/non-faststart.mov
+{ duration: 691200000, timescale: 23040000, durationInSeconds: 30 }
+node usage.js   0.42s user 0.08s system 13% cpu 3.661 total
+
+$ time node usage.js https://raw.githubusercontent.com/mstssk/til/refs/heads/master/mp4-duration/sample/faststart.mov
+{ duration: 7680000, timescale: 256000, durationInSeconds: 30 }
+node usage.js   0.19s user 0.02s system 10% cpu 1.954 total
+```
+
+# References
+
+- > numairawan/video-duration: 📺 Get video duration from URL and local video in Node.js and the browser without ffmpeg/ffprobe. https://github.com/numairawan/video-duration
+- > -movflags faststartが有効なのかffmpegで調べる - kazeno memo https://icat.hatenablog.com/entry/2021/11/11/221446
