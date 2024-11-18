@@ -16,7 +16,6 @@ export async function mp4Duration(url) {
   }
 
   let ftypChecked = false;
-  const mvhdBuf = Buffer.from("mvhd");
   for await (const chunk of res.body) {
     // Note: https://gist.github.com/Elements-/cf063254730cd754599e
     const buf = Buffer.from(chunk.buffer);
@@ -29,7 +28,7 @@ export async function mp4Duration(url) {
       ftypChecked = true;
     }
 
-    const index = buf.indexOf(mvhdBuf);
+    const index = buf.indexOf(Buffer.from("mvhd"));
     if (index >= 0) {
       const start = index + 17;
       const timescale = buf.readUInt32BE(start, 4);
