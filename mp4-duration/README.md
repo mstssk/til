@@ -32,3 +32,14 @@ node usage.js   0.19s user 0.02s system 10% cpu 1.954 total
 
 - > numairawan/video-duration: 📺 Get video duration from URL and local video in Node.js and the browser without ffmpeg/ffprobe. https://github.com/numairawan/video-duration
 - > -movflags faststartが有効なのかffmpegで調べる - kazeno memo https://icat.hatenablog.com/entry/2021/11/11/221446
+
+-----
+
+mp4,movファイルが音声を含むかどうかの判定。
+音声トラックがあれば、moovアトムの中に音声のシーク情報について示す `smhd` アトムがあるので、それを探している。
+
+```
+$ time node find-smhd.mjs ./sample/faststart_no-audio.mp4
+'smhd' atom is exist? false
+node find-smhd.mjs ./sample/faststart_no-audio.mp4  0.06s user 0.01s system 82% cpu 0.091 total
+```
