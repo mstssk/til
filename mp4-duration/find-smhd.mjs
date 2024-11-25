@@ -49,6 +49,12 @@ export async function findSmhd(filepath) {
   if (moovBuffer == null) {
     throw new Error("moov atom not found");
   }
+  console.debug(
+    "moov atom size:",
+    `${moovAtomSize} bytes,`,
+    "read bytes size:",
+    `${moovBuffer.length} bytes,`
+  );
   return moovBuffer.indexOf(Buffer.from("smhd")) >= 0;
 }
 
