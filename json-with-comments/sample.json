@@ -1,0 +1,13 @@
+{
+  // Inline comment
+  "foo": "bar",
+  /* Block comment */
+  "baz": [
+    "qux",
+    "quux",
+  ],
+  /*
+   * Multiline Block comment
+   */
+  "hoge": 123, // Suffix comment
+}
