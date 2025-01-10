@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jodit</title>
+
+  <link type="text/css" rel="stylesheet" href="node_modules/jodit/es2021/jodit.min.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "autobind-decorator": "https://unpkg.com/autobind-decorator@2.4.0/lib/esm/index.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import { Jodit } from './node_modules/jodit/esm/index.js';
+    window.Jodit = Jodit;
+    import './node_modules/jodit/esm/plugins/clean-html/clean-html.js';
+    import './node_modules/jodit/esm/plugins/paste/paste.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      const editor = Jodit.make('#editor', {
+        tabIndex: 0,
+        language: "ja",
+        disablePlugins: ["about"],
+        buttons: [
+          "paragraph",
+          "brush",
+          "bold",
+          "italic",
+          "underline",
+          "eraser",
+          "link",
+          "ul",
+          "ol",
+        ],
+        statusbar: false,
+        askBeforePasteHTML: false,
+        defaultActionOnPaste: Jodit.constants.INSERT_CLEAR_HTML,
+        link: { modeClassName: false, noFollowCheckbox: false },
+        colorPickerDefaultTab: "color",
+      });
+      // editor.value = '<p>start</p>';
+      window.editor = editor;
+    });
+  </script>
+</head>
+
+<body>
+  <textarea id="editor" name="editor"></textarea>
+</body>
+
+</html>
