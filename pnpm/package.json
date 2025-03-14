@@ -2,17 +2,18 @@
   "name": "pnpm",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "",
   "main": "index.js",
   "scripts": {
+    "dummy": "echo 'dummy'",
     "test": "vitest --run"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "packageManager": "pnpm@10.6.3",
   "dependencies": {
     "vitest": "^3.0.8"
   },
+  "packageManager": "pnpm@10.6.3",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
