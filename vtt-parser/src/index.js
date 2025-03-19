@@ -9,36 +9,33 @@ document.getElementById("input-url").addEventListener("change", (e) => {
   const url = e.target.value;
   fetch(url)
     .then((response) => response.blob())
-    .then(parseVttBlob)
-    .then((parsed) => {
-      outputElem.innerHTML = JSON.stringify(parsed, null, 2);
-    })
-    .catch((error) => {
-      console.error(error);
-      outputElem.innerHTML = "Error loading VTT file by url";
-    });
+    .then(processVtt);
 });
 
 document.getElementById("input-file").addEventListener("change", (e) => {
   const file = e.target.files[0];
-  parseVttBlob(file)
-    .then((parsed) => {
-      outputElem.innerHTML = JSON.stringify(parsed, null, 2);
-    })
-    .catch((error) => {
-      console.error(error);
-      outputElem.innerHTML = "Error loading VTT file by file";
-    });
+  processVtt(file);
 });
 
+async function processVtt(blob) {
+  const blobUrl = URL.createObjectURL(blob);
+  try {
+    const result = await parseVttBlob(blobUrl);
+    outputElem.innerHTML = JSON.stringify(result, null, 2);
+  } catch (error) {
+    console.error(error);
+    outputElem.innerHTML = "Error loading VTT file";
+  } finally {
+    URL.revokeObjectURL(blobUrl);
+  }
+}
+
 /**
- * @param {Blob} blob
+ * @param {string} blobUrl
  * @returns
  */
-function parseVttBlob(blob) {
+function parseVttBlob(blobUrl) {
   return new Promise((resolve, reject) => {
-    const blobUrl = URL.createObjectURL(blob);
-
     const trackElem = document.createElement("track");
     trackElem.src = blobUrl;
     trackElem.kind = "subtitles";
