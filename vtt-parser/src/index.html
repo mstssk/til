@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VTT</title>
+
+  <script defer src="./index.js"></script>
+</head>
+
+<body>
+
+  <style>
+    input {
+      min-width: 300px;
+      field-sizing: content;
+    }
+  </style>
+
+  <p>
+    VTTファイルを選択、またはURLを指定し、DOM APIを使って読み込みます。
+  </p>
+
+  <form onsubmit="return false;">
+    <input id="input-file" type="file" accept="text/vtt" /><br>
+    <input id="input-url" type="url" placeholder="VTTファイルのURLを指定" autofocus /><br>
+    <button type="reset">リセット</button>
+  </form>
+  <hr>
+  <pre id="output"></pre>
+
+</body>
+
+</html>
