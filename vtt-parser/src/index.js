@@ -9,7 +9,11 @@ document.getElementById("input-url").addEventListener("change", (e) => {
   const url = e.target.value;
   fetch(url)
     .then((response) => response.blob())
-    .then(processVtt);
+    .then(processVtt)
+    .catch((error) => {
+      console.error(error);
+      outputElem.innerHTML = "Error fetching specified URL";
+    });
 });
 
 document.getElementById("input-file").addEventListener("change", (e) => {
@@ -17,7 +21,14 @@ document.getElementById("input-file").addEventListener("change", (e) => {
   processVtt(file);
 });
 
+/**
+ * @param {Blob} blob
+ */
 async function processVtt(blob) {
+  console.debug(blob);
+  if (blob.type !== "text/vtt") {
+    blob = await convertSrtToVtt(blob);
+  }
   const blobUrl = URL.createObjectURL(blob);
   try {
     const result = await parseVttBlob(blobUrl);
@@ -32,7 +43,6 @@ async function processVtt(blob) {
 
 /**
  * @param {string} blobUrl
- * @returns
  */
 function parseVttBlob(blobUrl) {
   return new Promise((resolve, reject) => {
@@ -65,14 +75,18 @@ function parseVttBlob(blobUrl) {
     audioElem.src =
       "data:audio/aac;base64,//FQQAOf/N4CAExhdmM2MS4xOS4xMDAAAjBADv/xUEABf/wBGCAH";
   });
+}
 
-  // return new Promise((resolve, reject) => {
-  //   const reader = new FileReader();
-  //   reader.onload = function () {
-  //     const text = reader.result;
-  //     resolve(text);
-  //   };
-  //   reader.onerror = reject;
-  //   reader.readAsText(blob);
-  // });
+/**
+ * @param {Blob} blob
+ */
+async function convertSrtToVtt(blob) {
+  let content = await blob.text();
+  content = content.replaceAll(
+    /^(\d{2}:\d{2}:\d{2}),(\d{3}) --> (\d{2}:\d{2}:\d{2}),(\d{3})$/gm,
+    "$1.$2 --> $3.$4"
+  );
+  content = `WEBVTT\n\n${content}`;
+  console.debug(content);
+  return new Blob([content], { type: "text/vtt" });
 }

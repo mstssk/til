@@ -14,16 +14,17 @@
   <style>
     input {
       min-width: 300px;
+      max-width: 90vw;
       field-sizing: content;
     }
   </style>
 
   <p>
-    VTTファイルを選択、またはURLを指定し、DOM APIを使って読み込みます。
+    VTTファイルかSRTファイルを選択、またはURLを指定し、DOM APIを使って読み込みます。
   </p>
 
   <form onsubmit="return false;">
-    <input id="input-file" type="file" accept="text/vtt" /><br>
+    <input id="input-file" type="file" accept="text/vtt,.srt" /><br>
     <input id="input-url" type="url" placeholder="VTTファイルのURLを指定" autofocus /><br>
     <button type="reset">リセット</button>
   </form>
