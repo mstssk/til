@@ -1,0 +1,21 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@b-fuze/deno-dom@*": "0.1.49",
+    "npm:@mozilla/readability@*": "0.6.0",
+    "npm:html-to-md@*": "0.8.7"
+  },
+  "jsr": {
+    "@b-fuze/deno-dom@0.1.49": {
+      "integrity": "45c40175fdd1e74ab2d4b54c4fdaabbad6e5b76ee28df12a48e076b3fa7901a9"
+    }
+  },
+  "npm": {
+    "@mozilla/readability@0.6.0": {
+      "integrity": "sha512-juG5VWh4qAivzTAeMzvY9xs9HY5rAcr2E4I7tiSSCokRFi7XIZCAu92ZkSTsIj1OPceCifL3cpfteP3pDT9/QQ=="
+    },
+    "html-to-md@0.8.7": {
+      "integrity": "sha512-4QPEv2rFNVjS3KkHBxW5p1+a/WPJBAUVMGEmNFnhnUJJ6gEbhtifJki/7WgKQw5qPp3M+ZJTnq1YcR4+5i9srg=="
+    }
+  }
+}
