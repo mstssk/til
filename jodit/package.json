@@ -10,7 +10,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "jodit": "^4.2.47"
+    "jodit": "^4.6.2"
   },
   "devDependencies": {
     "serve": "^14.2.4"
