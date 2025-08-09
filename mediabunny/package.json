@@ -1,0 +1,17 @@
+{
+  "name": "mediabunny-til",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --outdir=public",
+    "start": "serve public"
+  },
+  "dependencies": {
+    "mediabunny": "^1.5.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8",
+    "serve": "^14.2.4",
+    "typescript": "^5.9.2"
+  }
+}
