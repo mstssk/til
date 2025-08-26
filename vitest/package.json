@@ -6,6 +6,6 @@
     "vitest-browser-react": "^1.0.1"
   },
   "scripts": {
-    "test:browser": "vitest"
+    "test": "vitest"
   }
 }

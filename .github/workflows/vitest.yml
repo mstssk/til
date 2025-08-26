@@ -1,0 +1,22 @@
+name: vitest
+
+on:
+  push:
+    paths:
+      - "vitest/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vitest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+          cache-dependency-path: vitest/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npm test
