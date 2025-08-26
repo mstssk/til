@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "vitest/**"
+      - ".github/workflows/vitest.yml"
 
 jobs:
   test:
@@ -17,6 +18,15 @@ jobs:
         with:
           cache: "npm"
           cache-dependency-path: vitest/package-lock.json
+      - name: playwright cache
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
       - run: npm ci
-      - run: npx playwright install --with-deps
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
       - run: npm test
