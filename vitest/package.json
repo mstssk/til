@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.1",
+    "@vitest/browser": "^3.2.4",
+    "playwright": "^1.55.0",
+    "vitest-browser-react": "^1.0.1"
+  },
+  "scripts": {
+    "test:browser": "vitest"
+  }
+}
