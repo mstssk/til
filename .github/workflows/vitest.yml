@@ -28,5 +28,5 @@ jobs:
             ${{ runner.os }}-playwright-
       - run: npm ci
       - if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
       - run: npm test
