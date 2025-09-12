@@ -1,0 +1,18 @@
+{
+  "name": "tailwindcss",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "build": "tailwindcss -i src/styles.css -o dist/styles.css",
+    "watch": "npm run build -- --watch=always",
+    "start": "npx serve dist",
+    "dev": "npm run watch & npm start"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "tailwindcss": "^4.1.13"
+  }
+}
