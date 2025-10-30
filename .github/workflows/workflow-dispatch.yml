@@ -29,7 +29,7 @@ on:
 jobs:
   log-the-inputs:
     concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Run on ${{ github.ref }}"
         run: |
